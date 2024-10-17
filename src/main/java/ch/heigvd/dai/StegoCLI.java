@@ -60,42 +60,34 @@ public class StegoCLI implements Callable<Integer> {
     }
 
     private void encodeMessage() throws IOException {
-        // Lire l'image en tant que tableau de bytes
         BufferedImage image = ImageIO.read(inputFile);
         String dataToHide = message;
 
         if (encrypt) {
-            dataToHide = encryptMessage(dataToHide); // Placeholder for encryption logic
+            dataToHide = encryptMessage(dataToHide);
         }
 
-        // Vérifier que le message peut tenir dans l'image
         if (dataToHide.length() * 8 > image.getWidth() * image.getHeight()) {
             throw new IOException("Message trop long pour être caché dans l'image.");
         }
 
-        int dataIndex = 0; // Index dans le message
+        int dataIndex = 0;
         for (int y = 0; y < image.getHeight(); y++) {
             for (int x = 0; x < image.getWidth(); x++) {
-                // Obtenir la couleur du pixel
                 int pixel = image.getRGB(x, y);
-                int r = (pixel >> 16) & 0xFF; // Composante rouge
-                int g = (pixel >> 8) & 0xFF;  // Composante verte
-                int b = pixel & 0xFF;         // Composante bleue
+                int r = (pixel >> 16) & 0xFF;
+                int g = (pixel >> 8) & 0xFF;
+                int b = pixel & 0xFF;
 
-                // Si nous avons encore des données à cacher
                 if (dataIndex < dataToHide.length() * 8) {
-                    // Obtenir le bit à cacher
                     boolean bit = (dataToHide.charAt(dataIndex / 8) >> (7 - (dataIndex % 8) ) & 1) == 1;
-                    // Modifier le LSB du rouge
                     r = (r & 0xFE) | (bit ? 1 : 0);
                     dataIndex++;
                 }
 
-                // Reconstruire le pixel et le réassigner
                 pixel = (r << 16) | (g << 8) | b;
                 image.setRGB(x, y, pixel);
 
-                // Si nous avons fini d'écrire le message, sortir
                 if (dataIndex >= dataToHide.length() * 8) {
                     break;
                 }
@@ -104,49 +96,36 @@ public class StegoCLI implements Callable<Integer> {
                 break;
             }
         }
-
-        // Écrire l'image modifiée dans le fichier de sortie
         ImageIO.write(image, "png", outputFile);
     }
 
     private void decodeMessage() throws IOException {
         BufferedImage image = ImageIO.read(inputFile);
         StringBuilder message = new StringBuilder();
-        int dataIndex = 0; // Compteur de bits
-
-        // Lire chaque pixel et extraire le bit de poids faible
+        int dataIndex = 0;
         for (int y = 0; y < image.getHeight(); y++) {
             for (int x = 0; x < image.getWidth(); x++) {
                 int pixel = image.getRGB(x, y);
-                int r = (pixel >> 16) & 0xFF; // Composante rouge
+                int r = (pixel >> 16) & 0xFF;
 
-                // Extraire le LSB
                 message.append((r & 1) == 1 ? '1' : '0');
                 dataIndex++;
 
-                // Si nous avons atteint 8 bits, former un caractère
                 if (dataIndex % 8 == 0) {
                     int charCode = Integer.parseInt(message.substring(dataIndex - 8, dataIndex), 2);
-                    if (charCode == 0) { // Arrêter si on rencontre un caractère nul
+                    if (charCode == 0) {
                         break;
                     }
-                    message.delete(dataIndex - 8, dataIndex); // Supprimer les bits déjà utilisés
+                    message.delete(dataIndex - 8, dataIndex);
                 }
             }
         }
-
-        // Écrire le message décodé dans le fichier de sortie
         Files.write(outputFile.toPath(), message.toString().getBytes());
     }
-
-
     private String encryptMessage(String message) {
-        // Placeholder for encryption logic. Implement a real encryption algorithm.
         return "ENCRYPTED(" + message + ")";
     }
-
     private String decryptMessage(String encryptedMessage) {
-        // Placeholder for decryption logic. Implement a real decryption algorithm.
         return encryptedMessage.replace("ENCRYPTED(", "").replace(")", "");
     }
 }
