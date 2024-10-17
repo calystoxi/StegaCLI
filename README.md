@@ -46,13 +46,13 @@ java -jar target/stego-cli-1.0.jar [options]
 
 ### Command-Line Options
 
-| Option             | Description                                                                                      | Required            |
-|--------------------|--------------------------------------------------------------------------------------------------|---------------------|
-| `-m`, `--mode`     | Mode of operation: `encode` (to hide a message) or `decode` (to extract a hidden message).        | Yes                 |
-| `-i`, `--input`    | Input image file for encoding/decoding.                                                           | Yes                 |
-| `-o`, `--output`   | Output file to store the result (image with hidden message for encoding, or message file for decoding). Default: `stega.txt` | No                  |
-| `--message`        | Message to hide in the image when encoding.                                                       | Required for encoding |
-| `-e`, `--encrypt`  | Flag to encrypt the message before hiding it (default: `false`).                                  | No                  |
+|      Option       | Description                                                                                      |        Required        |
+|:------------:|--------------------------------------------------------------------------------------------------|:----------------------:|
+|  `-m`, `--mode`   | Mode of operation: `encode` (to hide a message) or `decode` (to extract a hidden message).        |          Yes           |
+|  `-i`, `--input`  | Input image file for encoding/decoding.                                                           |          Yes           |
+| `-o`, `--output`  | Output file to store the result (image with hidden message for encoding, or message file for decoding). Default: `stega.txt` |           No           |
+|    `--message`    | Message to hide in the image when encoding.                                                       | Required for encoding  |
+| `-e`, `--encrypt` | Flag to encrypt the message before hiding it (default: `false`).                                  |           No           |
 
 ### Encoding Example
 
